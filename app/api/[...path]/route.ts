@@ -49,11 +49,41 @@ async function handle(request: Request) {
         if (path === 'auth/login' || path === 'auth/signup') {
             if (request.method !== 'POST')
                 throw new ApiError('Método inválido.', 405);
-            const input = z.object({ email: z.string().email().max(250), password: z.string().min(8).max(128) }).parse(await readJSON(request));
+            const input = z.object({ email: z.string().trim().toLowerCase().email().max(250), password: z.string().min(8).max(128) }).parse(await readJSON(request));
             const route = path === 'auth/login' ? '/auth/v1/token?grant_type=password' : '/auth/v1/signup';
             const response = await sb(route, undefined, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(input) });
             const session = await response.json() as any;
+            if (path === 'auth/login' && (!session.access_token || !session.user?.id)) throw new ApiError('O login não retornou uma sessão válida. Tente novamente.', 502);
+            if (path === 'auth/signup' && Array.isArray(session.user?.identities) && !session.user.identities.length) throw new ApiError('Já existe uma conta para este e-mail. Use Entrar ou Esqueci minha senha.', 409);
             return cookies(json({ user: session.user || null, confirmation_required: !session.access_token }), session, request);
+        }
+        if (path === 'auth/recover' && request.method === 'POST') {
+            const input = z.object({email: z.string().trim().toLowerCase().email().max(250)}).parse(await readJSON(request));
+            const redirect = new URL(request.url).origin + '/';
+            await sb('/auth/v1/recover?redirect_to=' + encodeURIComponent(redirect), undefined, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(input)});
+            return json({ok:true});
+        }
+        if (path === 'auth/verify-recovery' && request.method === 'POST') {
+            const input = z.object({link:z.string().trim().min(20).max(4096)}).parse(await readJSON(request));
+            let token = input.link;
+            if (token.startsWith('https://')) { const u = new URL(token); if (u.origin !== new URL(configuration().url).origin || u.pathname !== '/auth/v1/verify' || u.searchParams.get('type') !== 'recovery') throw new ApiError('Copie o link de recuperação enviado por este aplicativo.'); token = u.searchParams.get('token') || ''; }
+            if (!/^[a-zA-Z0-9_-]{20,256}$/.test(token)) throw new ApiError('Link de recuperação inválido. Solicite um novo e copie o endereço completo.');
+            const r = await sb('/auth/v1/verify', undefined, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token_hash:token,type:'recovery'})});
+            const session = await r.json() as any;
+            if (!session.access_token || !session.user?.id) throw new ApiError('O link não gerou uma sessão. Solicite um novo link.',400);
+            return cookies(json({ok:true}),session,request);
+        }
+        if (path === 'auth/recovery-session' && request.method === 'POST') {
+            const input=z.object({access_token:z.string().min(20).max(10000),refresh_token:z.string().min(10).max(1000)}).parse(await readJSON(request));
+            const r=await sb('/auth/v1/user',input.access_token); const user=await r.json() as any;
+            if (!user.id) throw new ApiError('Link expirado. Solicite um novo link.',401);
+            return cookies(json({ok:true}),{...input,expires_in:3600},request);
+        }
+        if (path === 'auth/password' && request.method === 'POST') {
+            const {token}=await authenticate(request);
+            const input=z.object({password:z.string().min(8).max(128)}).parse(await readJSON(request));
+            await sb('/auth/v1/user',token,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(input)});
+            return json({ok:true});
         }
         if (path === 'auth/refresh' && request.method === 'POST') {
             const token = cookieToken(request, 'ota_refresh');

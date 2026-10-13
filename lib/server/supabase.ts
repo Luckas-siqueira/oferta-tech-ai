@@ -11,7 +11,8 @@ export async function sb(path: string, token?: string, options: RequestInit = {}
         error = await response.json();
     }
     catch { }
-    throw new ApiError(response.status === 401 ? 'Sua sessão expirou. Entre novamente.' : error.message || error.msg || error.error_description || 'Não foi possível concluir a operação no banco.', response.status);
+    const authErrors: Record<string,string> = {invalid_credentials:'E-mail ou senha incorretos. Se já criou sua conta, use Esqueci minha senha.',user_already_exists:'Este e-mail já possui uma conta. Criar conta não altera a senha; use Entrar ou Esqueci minha senha.',email_not_confirmed:'Confirme seu e-mail antes de entrar.',email_address_not_authorized:'O envio de e-mail não está autorizado para este endereço. Configure o SMTP do Supabase.',over_email_send_rate_limit:'Limite de e-mails atingido. Aguarde antes de tentar novamente.',same_password:'Escolha uma senha diferente da anterior.'};
+    throw new ApiError(authErrors[error.error_code || error.code] || (response.status === 401 ? 'Sua sessão expirou. Entre novamente.' : error.message || error.msg || error.error_description || 'Não foi possível concluir a operação no banco.'), response.status);
 } return response; }
 export function cookieToken(request: Request, name = 'ota_access') { const cookie = request.headers.get('cookie') || ''; return cookie.split(';').map(c => c.trim()).find(c => c.startsWith(name + '='))?.slice(name.length + 1) || ''; }
 export async function authenticate(request: Request) { const token = cookieToken(request); if (!token)

@@ -67,3 +67,9 @@ Ao gerar com nome e link preenchidos, o editor guarda uma cópia independente do
 ## Painel da loja unificado
 
 Integração com produtos.json da Mega Vitrine: leitura, publicação de foto e dados em um commit, edição com verificação de conflito e exclusão confirmada. Testes HTTP controlados verificam preservação do catálogo, duplicidade, alterações concorrentes e commit atômico; não representam uma publicação de produto real com um token do usuário. O painel antigo passa a abrir o aplicativo. Autorização do GitHub dentro do app e testes de toque em Android continuam necessários.
+
+## Correção de cadastro e autenticação
+
+Logs reais identificaram user_already_exists no cadastro e invalid_credentials no login. O e-mail é normalizado; a senha preserva espaços. O formulário separa criação de conta e entrada, confirma a senha, permite exibi-la e oferece recuperação por e-mail, retorno por sessão e validação manual do link. Mensagens falsas de criação para uma identidade duplicada são recusadas.
+
+Cadastro e login com senha foram testados diretamente na API Supabase com uma conta temporária, ambos HTTP 200 com sessão válida. Os 37 testes automatizados incluem recuperação e alteração autorizada de senha. Não houve envio de e-mail de recuperação para a conta do usuário nem teste de interface em Android. Entrega de e-mail depende do SMTP e dos limites do Supabase.

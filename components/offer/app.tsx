@@ -18,6 +18,7 @@ const headings: Record<Page, [
 ]> = { store: ['Sua loja, no mesmo aplicativo.', 'Publique e organize os produtos da Mega Vitrine.'], dashboard: ['Suas próximas ofertas começam aqui.', 'Transforme produtos de tecnologia em ofertas prontas para compartilhar.'], new: ['Prepare sua próxima oferta.', 'Do link à mensagem: extraia, revise e compartilhe.'], batch: ['Mais links. Menos trabalho.', 'Processe uma lista de produtos e revise cada resultado.'], history: ['Tudo que você já preparou.', 'Consulte, edite e organize suas ofertas salvas.'], settings: ['Seu espaço, configurado.', 'Conecte os serviços e instale o aplicativo no celular.'] };
 export default function OfferApp() {
     const [page, setPage] = useState<Page>('dashboard'), [config, setConfig] = useState<Config | null>(null), [offers, setOffers] = useState<Offer[]>([]), [stats, setStats] = useState<Stats | null>(null), [loading, setLoading] = useState(true), [error, setError] = useState(''), [toast, setToast] = useState(''), [menu, setMenu] = useState(false), [initial, setInitial] = useState<Draft>(emptyOffer()), [limited, setLimited] = useState(false), [offline, setOffline] = useState(false);
+    const [recovery,setRecovery]=useState(false);
     const currentDraft = useRef<Draft>(initial), toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null), installPrompt = useRef<any>(null);
     const notify = useCallback((message: string) => { setToast(message); if (toastTimer.current)
         clearTimeout(toastTimer.current); toastTimer.current = setTimeout(() => setToast(''), 6500); }, []);
@@ -50,7 +51,7 @@ export default function OfferApp() {
     finally {
         setLoading(false);
     } }, [loadOffers]);
-    useEffect(() => { if (window.location.hash === '#loja') setPage('store'); reload(); const install = (e: Event) => { e.preventDefault(); installPrompt.current = e; }; const online = () => setOffline(!navigator.onLine); online(); window.addEventListener('beforeinstallprompt', install); window.addEventListener('online', online); window.addEventListener('offline', online); if ('serviceWorker' in navigator)
+    useEffect(() => { const params=new URLSearchParams(window.location.hash.slice(1)); if(params.get('type')==='recovery' && params.get('access_token')) { const access_token=params.get('access_token'), refresh_token=params.get('refresh_token'); window.history.replaceState(null,'',window.location.pathname); api('auth/recovery-session',body({access_token,refresh_token})).then(()=>{setRecovery(true);setPage('settings');reload()}).catch(e=>notify(e.message)); } if (window.location.hash === '#loja') setPage('store'); reload(); const install = (e: Event) => { e.preventDefault(); installPrompt.current = e; }; const online = () => setOffline(!navigator.onLine); online(); window.addEventListener('beforeinstallprompt', install); window.addEventListener('online', online); window.addEventListener('offline', online); if ('serviceWorker' in navigator)
         navigator.serviceWorker.register('/sw.js').catch(() => { }); return () => { window.removeEventListener('beforeinstallprompt', install); window.removeEventListener('online', online); window.removeEventListener('offline', online); }; }, [reload]);
     function go(next: Page) { if (page === 'new')
         setInitial(currentDraft.current); setPage(next); setMenu(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }
@@ -93,7 +94,7 @@ export default function OfferApp() {
     {page === 'batch' && <Batch offers={offers} config={config} onReview={edit} notify={notify}/>}
     {page === 'history' && <>{limited && <div className="notice warning">Exibindo os 1.000 registros mais recentes. Os indicadores incluem todo o banco.</div>}{!ready ? <section className="panel"><Empty title="Conecte sua conta para acessar o histórico">As ofertas serão consultadas no Supabase. Vá a Configurações para conectar e entrar.</Empty><Button variant="primary" onClick={() => go('settings')}>Abrir configurações</Button></section> : <History offers={offers} onEdit={edit} onDelete={remove} onMarkShared={markShared} notify={notify}/>}</>}
     {page === 'store' && <MyStore notify={notify} onReview={edit}/>}
-    {page === 'settings' && <Settings config={config} reload={reload} notify={notify} install={install}/>}
+    {page === 'settings' && <Settings recovery={recovery} onRecovered={()=>setRecovery(false)} config={config} reload={reload} notify={notify} install={install}/>}
     <footer className="app-footer"><span>Oferta Tech AI</span><span>Revise. Compartilhe. Venda com clareza.</span></footer></main></div><nav className="bottom-nav" aria-label="Navegação principal">{nav.map(({ id, label, icon: Icon }) => <button key={id} className={page === id ? 'active' : ''} onClick={() => go(id)}><Icon size={19}/><span>{id === 'dashboard' ? 'Início' : id === 'history' ? 'Histórico' : id === 'settings' ? 'Ajustes' : label}</span></button>)}</nav>{toast && <div className="toast" role="status" aria-live="polite">{toast}<button aria-label="Fechar aviso" onClick={() => setToast('')}><X size={16}/></button></div>}</div></StoreProvider>;
 }
 
