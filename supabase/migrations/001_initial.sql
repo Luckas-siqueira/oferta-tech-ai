@@ -28,13 +28,17 @@ create table public.offers (
 );
 create index offers_user_date on public.offers(user_id,created_at desc);
 create index offers_image on public.offers(image_path);
+create index image_assets_owner on public.image_assets(user_id);
 create table public.image_delete_queue(path text primary key,user_id uuid not null default auth.uid() references auth.users(id) on delete cascade,created_at timestamptz not null default now());
 alter table public.offers enable row level security;
 alter table public.image_assets enable row level security;
 alter table public.image_delete_queue enable row level security;
-create policy offers_owned on public.offers for all to authenticated using(user_id=auth.uid()) with check(user_id=auth.uid());
-create policy images_owned on public.image_assets for all to authenticated using(user_id=auth.uid()) with check(user_id=auth.uid());
-create policy queue_owned on public.image_delete_queue for all to authenticated using(user_id=auth.uid()) with check(user_id=auth.uid());
+create index image_delete_queue_owner on public.image_delete_queue(user_id);
+revoke all on public.offers,public.image_assets,public.image_delete_queue from anon;
+grant select,insert,update,delete on public.offers,public.image_assets,public.image_delete_queue to authenticated;
+create policy offers_owned on public.offers for all to authenticated using(user_id=(select auth.uid())) with check(user_id=(select auth.uid()));
+create policy images_owned on public.image_assets for all to authenticated using(user_id=(select auth.uid())) with check(user_id=(select auth.uid()));
+create policy queue_owned on public.image_delete_queue for all to authenticated using(user_id=(select auth.uid())) with check(user_id=(select auth.uid()));
 create function public.touch_offer() returns trigger language plpgsql set search_path=public as $$begin new.updated_at=now();return new;end;$$;
 create trigger update_offer_time before update on public.offers for each row execute function public.touch_offer();
 create function public.delete_offers(offer_ids uuid[]) returns jsonb language plpgsql security invoker set search_path=public as $$
@@ -62,7 +66,10 @@ create table public.usage_limits(user_id uuid not null references auth.users(id)
 alter table public.usage_limits enable row level security;
 -- Only the security-definer quota RPC can mutate this table. No direct client access.
 revoke all on public.usage_limits from anon,authenticated;
-create function public.consume_usage(usage_kind text) returns boolean language plpgsql security definer set search_path=public as $$
+create schema if not exists oferta_private;
+revoke all on schema oferta_private from public,anon;
+grant usage on schema oferta_private to authenticated;
+create function oferta_private.consume_usage(usage_kind text) returns boolean language plpgsql security definer set search_path='' as $$
 declare period text;max_calls integer;actual integer;
 begin
  if auth.uid() is null then raise exception 'Authentication required';end if;
@@ -73,6 +80,9 @@ begin
  on conflict(user_id,kind,window_key) do update set count=public.usage_limits.count+1 where public.usage_limits.count<max_calls returning count into actual;
  return actual is not null;
 end;$$;
+revoke all on function oferta_private.consume_usage(text) from public,anon;
+grant execute on function oferta_private.consume_usage(text) to authenticated;
+create function public.consume_usage(usage_kind text) returns boolean language sql security invoker set search_path='' as $$ select oferta_private.consume_usage(usage_kind); $$;
 revoke all on function public.consume_usage(text) from public,anon;grant execute on function public.consume_usage(text) to authenticated;
 insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types) values('offer-images','offer-images',false,5000000,array['image/jpeg','image/png','image/webp']) on conflict(id) do nothing;
 create policy product_images_read on storage.objects for select to authenticated using(bucket_id='offer-images' and (storage.foldername(name))[1]=auth.uid()::text);

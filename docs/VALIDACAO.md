@@ -45,3 +45,11 @@ Não houve teste visual em navegador ou dispositivo nesta execução: o ambiente
 9. Usar uma mesma imagem em mais de um registro via banco autorizado; excluir um e confirmar preservação da imagem do outro.
 10. Testar falha de banco/Storage e quota; confirmar mensagens e fila de limpeza.
 11. Instalar pelo Chrome Android e validar navegação, formulários, tabelas e compartilhamento.
+
+## Supabase ativado e validado
+
+O projeto Supabase foi reativado e as duas migrações foram aplicadas. Testes no PostgreSQL real verificaram cadastro, edição, exclusão individual, exclusão em lote, isolamento entre duas contas, rejeição atômica de seleção não autorizada, preservação de imagem compartilhada, fila de limpeza e limite diário de IA. Todas as contas e ofertas temporárias foram removidas. Isso atualiza as pendências de banco na tabela acima.
+
+O teste do banco não enviou mensagens nem usou a API OpenAI. O reconhecimento real de imagens, o teste de galeria e o compartilhamento no Android continuam pendentes.
+
+A análise de segurança identificou descoberta do esquema por contas autenticadas (permitida para as tabelas REST, com RLS por proprietário), e proteção contra senhas vazadas desativada. Essa proteção adicional pode ser configurada em Supabase Auth: https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection .

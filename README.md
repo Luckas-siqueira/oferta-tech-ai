@@ -56,7 +56,7 @@ tests/                    Testes de lógica e APIs com respostas controladas
 
 ## Configurar pelo celular
 
-1. Crie/conecte seu projeto Supabase. No **SQL Editor**, execute `supabase/migrations/001_initial.sql` uma única vez. A migração cria tabelas, funções, políticas RLS e o bucket privado `offer-images`.
+1. Crie/conecte seu projeto Supabase. No **SQL Editor**, execute os arquivos de `supabase/migrations/` em ordem, uma única vez. O projeto conectado nesta entrega já recebeu essas migrações. A migração cria tabelas, funções, políticas RLS e o bucket privado `offer-images`.
 2. Em Supabase, habilite autenticação por e-mail/senha. Cadastros com confirmação por e-mail devem ser confirmados antes do primeiro login. Em Authentication → URL Configuration, defina Site URL como `https://oferta-tech-ai.openluck9.chatgpt.site` (ou a URL da sua implantação).
 3. Configure no servidor as variáveis listadas em `.env.example`:
 
