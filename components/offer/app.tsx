@@ -55,7 +55,7 @@ export default function OfferApp() {
     function fresh() { if (page === 'new' && (currentDraft.current.name || currentDraft.current.affiliate_url) && !confirm('Começar um novo rascunho? As alterações não salvas serão descartadas.'))
         return; const d = emptyOffer(); currentDraft.current = d; setInitial(d); setPage('new'); setMenu(false); window.scrollTo(0, 0); }
     function edit(d: Draft) { setInitial(d); currentDraft.current = d; setPage('new'); window.scrollTo(0, 0); }
-    async function saved(o: Offer) { setOffers(old => old.some(x => x.id === o.id) ? old.map(x => x.id === o.id ? o : x) : [o, ...old]); setInitial(o); currentDraft.current = o; try {
+    async function saved(o: Offer, keepForm = false) { setOffers(old => old.some(x => x.id === o.id) ? old.map(x => x.id === o.id ? o : x) : [o, ...old]); if (!keepForm) { setInitial(o); currentDraft.current = o; } try {
         setStats(await api<Stats>('stats'));
     }
     catch {

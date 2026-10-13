@@ -59,3 +59,7 @@ A análise de segurança identificou descoberta do esquema por contas autenticad
 O botão principal prepara a foto antes de abrir o compartilhamento nativo com arquivo e texto. Os testes adicionais verificam entrega do arquivo ao Web Share sem espera de rede no clique, cancelamento sem envio alternativo, remoção da frase automática sobre comissão em mensagens antigas e preservação do link original. TypeScript, 28 testes e build Sites passaram. A chave privada não foi encontrada no pacote compilado.
 
 O envio de foto e legenda no WhatsApp real não foi testado em Android neste ambiente. O app oferece baixar a foto e copiar a legenda quando o navegador ou o WhatsApp não mantêm ambos juntos. A integração OpenAI ainda depende de saldo na API; a tentativa real anterior foi recusada por saldo insuficiente.
+
+## Limpeza após gerar mensagem
+
+Ao gerar com nome e link preenchidos, o editor guarda uma cópia independente dos dados e do arquivo de foto, limpa o cadastro e leva à prévia. A prévia permite editar, copiar, compartilhar e salvar o resultado sem recolocar os dados no formulário. Nenhuma exclusão do banco é executada. TypeScript, os 28 testes existentes e build foram verificados; o novo fluxo de toque no Android não foi testado em aparelho real.
