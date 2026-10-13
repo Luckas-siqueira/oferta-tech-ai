@@ -132,3 +132,7 @@ Para a hospedagem gerenciada da entrega, use os helpers Sites já configurados. 
 ## Painel da Mega Vitrine
 
 O painel antigo da loja redireciona para este aplicativo. Em Minha loja, conecte um token GitHub de expiração curta, somente para Luckas-siqueira/Mega-Vitrine e Contents: Read and write. Ele fica apenas na memória da aba e é enviado diretamente à API GitHub. Carregue o catálogo para editar ou excluir um produto; Nova oferta e a prévia permitem publicar novos produtos. Foto e catálogo são enviados em um commit atômico, sem force push. Mudanças concorrentes são rejeitadas. A publicação no GitHub Pages pode levar alguns minutos. Exclusões do catálogo não apagam imagens antigas nem ofertas no Supabase.
+
+## Leitura alternativa com Jina Reader
+
+Nova oferta oferece Automático, Somente leitura direta e Jina Reader. Automático tenta metadados públicos e usa o Jina em caso de dados incompletos. O backend chama r.jina.ai sem chave, com limite de tempo e resposta; o serviço recebe o link público. O link de afiliado permanece inalterado no cadastro. Páginas de login são recusadas; recomendações não são usadas para preencher preço do produto principal. Valores e imagens precisam ser revisados. O serviço gratuito tem limites e não garante leitura de todas as lojas.

@@ -73,3 +73,7 @@ Integração com produtos.json da Mega Vitrine: leitura, publicação de foto e 
 Logs reais identificaram user_already_exists no cadastro e invalid_credentials no login. O e-mail é normalizado; a senha preserva espaços. O formulário separa criação de conta e entrada, confirma a senha, permite exibi-la e oferece recuperação por e-mail, retorno por sessão e validação manual do link. Mensagens falsas de criação para uma identidade duplicada são recusadas.
 
 Cadastro e login com senha foram testados diretamente na API Supabase com uma conta temporária, ambos HTTP 200 com sessão válida. Os 37 testes automatizados incluem recuperação e alteração autorizada de senha. Não houve envio de e-mail de recuperação para a conta do usuário nem teste de interface em Android. Entrega de e-mail depende do SMTP e dos limites do Supabase.
+
+## Jina Reader
+
+Integração server-side sem chave paga, com seleção no editor e fallback automático. 40 testes passaram, incluindo seleção da foto e preço do produto em destaque, descarte de recomendações, páginas de login, URLs proibidas e limite HTTP 429. TypeScript passou. Teste da rota publicada é executado após a implantação; não há teste de toque no Android neste ambiente.

@@ -51,6 +51,7 @@ export function parsePrice(raw: unknown) { if (typeof raw === 'number')
 else if (s.includes(','))
     s = s.replace(',', '.'); const n = Number(s); return n > 0 && n < 10000000 ? n : null; }
 export type Extracted = {
+    provider?: string;
     name: string;
     description: string;
     image_url: string;
