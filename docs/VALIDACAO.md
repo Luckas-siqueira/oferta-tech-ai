@@ -1,0 +1,47 @@
+# Validação da primeira versão
+
+## Executado nesta entrega
+
+- TypeScript: `tsc --noEmit` — aprovado.
+- Testes: `node scripts/run-tests.mjs` — 24 testes aprovados, 0 falhas.
+- Build para Sites/Vinext/Workers — aprovado.
+- Build Next.js para Node.js — aprovado (compilação, TypeScript e geração das rotas).
+- Integração Supabase e OpenAI: código implementado; **não ativada** sem as variáveis e serviços externos.
+
+Os testes das APIs usam respostas HTTP controladas (fixtures) em Node.js. Não são um banco Supabase real, nem uma análise paga de imagens. A execução deles valida contratos, autorização aplicada pela API, tratamento de falhas e preservação dos dados, mas **não** comprova que as políticas PostgreSQL foram executadas ou que a IA reconheceu um produto real.
+
+## Cobertura e pendências
+
+| Item solicitado | Verificação feita | O que falta verificar |
+|---|---|---|
+| Cadastro com link | Validação + POST com resposta controlada; URL de afiliado preservada | Inserção real após migração Supabase |
+| Link sem metadados | Parser testado com HTML vazio e metadados parciais | Leitura de produtos reais em cada loja |
+| Imagem manual | Validação de assinatura, formato e tamanho; API recusa arquivo falso | Upload real e seleção na galeria Android |
+| Identificação multimodal | Esquema de saída validado; rota informa chave ausente | Chamada real à OpenAI e revisão do resultado |
+| Nome e descrição | Metadados + integração multimodal implementados | Qualidade da geração com imagens reais |
+| Edição | Formulário e PATCH implementados; tipagem e build passaram | Alteração persistente com Supabase real |
+| Mensagem WhatsApp | Testes dos estilos, omissão de preços e descontos não confirmados | Revisão pelo usuário no aparelho |
+| Cópia | Clipboard e fallback implementados | Permissão e comportamento no Android |
+| Compartilhamento | `wa.me`, Web Share e download implementados | Escolha do grupo, foto/legenda e confirmação no WhatsApp |
+| Cadastro em lote | Duplicados, URLs inválidas e preservação de rastreamento testados | Lote de produtos reais e salvamento após revisão |
+| Banco e histórico | APIs REST, RLS e SQL preparados; fixtures do histórico testadas | Migração, autenticação e RLS em projeto Supabase |
+| Exclusão individual/em massa | Testes das rotas verificam somente IDs selecionados e falha preservada | RPC PostgreSQL real, concorrência e limpeza Storage |
+| Indicadores | API testada lendo totais de `Content-Range` do banco | Contagens reais no projeto configurado |
+| Responsividade Android | CSS com layouts para 560/850/1150 px e navegação móvel | Inspeção visual e toque em aparelho real |
+| PWA | Manifest, ícones, standalone e regras de cache testados | Instalação no Chrome Android |
+
+Não houve teste visual em navegador ou dispositivo nesta execução: o ambiente não disponibilizou a habilidade de controle de navegador exigida pelo fluxo de publicação. Não foram instalados navegadores alternativos.
+
+## Roteiro para validar depois da configuração
+
+1. Criar duas contas de teste e cadastrar uma oferta em cada uma.
+2. Confirmar que cada conta só consulta, altera e exclui seus próprios registros. Tentar IDs da outra conta e verificar erro.
+3. Enviar imagem da galeria; gerar sugestões com IA; confirmar incertezas e salvar.
+4. Fechar e abrir o app, entrar na conta e confirmar persistência.
+5. Editar preço, imagem e mensagem; recarregar e conferir os valores.
+6. Copiar e compartilhar no grupo; conferir a legenda e confirmar manualmente o envio.
+7. Processar lote com um link válido, um duplicado e um bloqueado; repetir a falha e completar manualmente.
+8. Selecionar duas ofertas, cancelar a exclusão e conferir que ficaram; confirmar e verificar tabela e indicadores.
+9. Usar uma mesma imagem em mais de um registro via banco autorizado; excluir um e confirmar preservação da imagem do outro.
+10. Testar falha de banco/Storage e quota; confirmar mensagens e fila de limpeza.
+11. Instalar pelo Chrome Android e validar navegação, formulários, tabelas e compartilhamento.
