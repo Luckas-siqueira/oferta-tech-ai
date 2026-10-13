@@ -1,0 +1,10 @@
+# Dependencies and generated output
+node_modules/
+.next/
+.vinext/
+dist/
+.wrangler/
+.sites-runtime/
+.env*
+!.env.example
+*.tsbuildinfo
