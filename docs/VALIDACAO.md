@@ -3,7 +3,7 @@
 ## Executado nesta entrega
 
 - TypeScript: `tsc --noEmit` — aprovado.
-- Testes: `node scripts/run-tests.mjs` — 24 testes aprovados, 0 falhas.
+- Testes: `node scripts/run-tests.mjs` — 28 testes aprovados, 0 falhas.
 - Build para Sites/Vinext/Workers — aprovado.
 - Build Next.js para Node.js — aprovado (compilação, TypeScript e geração das rotas).
 - Integração Supabase e OpenAI: código implementado; **não ativada** sem as variáveis e serviços externos.
@@ -53,3 +53,9 @@ O projeto Supabase foi reativado e as duas migrações foram aplicadas. Testes n
 O teste do banco não enviou mensagens nem usou a API OpenAI. O reconhecimento real de imagens, o teste de galeria e o compartilhamento no Android continuam pendentes.
 
 A análise de segurança identificou descoberta do esquema por contas autenticadas (permitida para as tabelas REST, com RLS por proprietário), e proteção contra senhas vazadas desativada. Essa proteção adicional pode ser configurada em Supabase Auth: https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection .
+
+## Atualização do compartilhamento com foto
+
+O botão principal prepara a foto antes de abrir o compartilhamento nativo com arquivo e texto. Os testes adicionais verificam entrega do arquivo ao Web Share sem espera de rede no clique, cancelamento sem envio alternativo, remoção da frase automática sobre comissão em mensagens antigas e preservação do link original. TypeScript, 28 testes e build Sites passaram. A chave privada não foi encontrada no pacote compilado.
+
+O envio de foto e legenda no WhatsApp real não foi testado em Android neste ambiente. O app oferece baixar a foto e copiar a legenda quando o navegador ou o WhatsApp não mantêm ambos juntos. A integração OpenAI ainda depende de saldo na API; a tentativa real anterior foi recusada por saldo insuficiente.

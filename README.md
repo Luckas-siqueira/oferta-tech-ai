@@ -11,7 +11,7 @@ Aplicativo web semiautomático para preparar ofertas de eletrônicos e informát
 - Seleção de imagens JPG, PNG e WebP pela galeria; prévia, substituição e remoção. Limite 5 MB; a imagem é enviada ao salvar e armazenada em bucket privado.
 - Análise multimodal de imagem e texto por integração real com a OpenAI. Saída estruturada e validada; incertezas exigem revisão.
 - Mensagens simples, profissionais e promocionais. Preço e desconto aparecem somente se informados/confirmados; preço extraído só é aceito em BRL.
-- Texto personalizado, cópia e abertura do WhatsApp para seleção manual do grupo. Compartilhamento de arquivo + texto quando o navegador suporta; alternativa de baixar a foto e copiar o texto.
+- Texto personalizado e cópia. O botão principal prepara a foto e abre o compartilhamento nativo do Android para seleção do WhatsApp e do grupo. Compartilhamento de arquivo + texto quando o navegador suporta; alternativa de baixar a foto e copiar o texto.
 - Processamento de até 50 links por lote, duas leituras simultâneas, resultados individuais, duplicados, retomada e nova tentativa de falhas. Cada produto precisa de revisão e salvamento explícito.
 - Histórico, busca, filtros, ordenação, edição, exclusão individual ou de até 100 ofertas selecionadas. A tela só remove registros após confirmação do servidor.
 - Exclusão transacional por usuário, preservação de imagens compartilhadas e fila de limpeza quando o armazenamento falha.
@@ -117,7 +117,7 @@ Para a hospedagem gerenciada da entrega, use os helpers Sites já configurados. 
 - Preço anterior é preenchido manualmente: não é inferido de `highPrice` de uma faixa de ofertas. O usuário confirma o desconto ao preencher ambos os preços.
 - A IA só funciona com chave de API válida e saldo. A identificação por foto pode ser incerta; não existe garantia de leitura de modelo, marca ou especificações.
 - A lista do histórico carrega os 1.000 itens mais recentes; o dashboard conta todos os registros no banco. Não há paginação além disso nesta primeira versão.
-- A instalação e o comportamento de compartilhar arquivos dependem do navegador Android. A Web Share API pode perder ativação após baixar a imagem; o app oferece alternativa para download e cópia.
+- A instalação e o comportamento de compartilhar arquivos dependem do navegador Android. A foto é preparada antes de um segundo toque no botão de compartilhamento para preservar a ativação do navegador; o app oferece alternativas de download e cópia.
 - GitHub: código publicado em https://github.com/Luckas-siqueira/oferta-tech-ai. Nenhuma credencial real é incluída no repositório.
 - Estado dos testes e integrações: leia `docs/VALIDACAO.md`. Não considerar banco, IA ou envio real testados enquanto os serviços não estiverem configurados.
 

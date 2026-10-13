@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { offerSchema } from '@/lib/shared/offer';
+import { offerSchema,removeAffiliateDisclosure } from '@/lib/shared/offer';
 import { analyzeProduct } from '@/lib/server/ai';
 import { allowedURL, boundedBody, extractProduct, imageType, remoteImage, extractionFailure } from '@/lib/server/extraction';
 import { ApiError, authenticate, configuration, consumeQuota, cookieToken, readJSON, sb, sessionCookies, signedImage } from '@/lib/server/supabase';
@@ -28,7 +28,7 @@ async function attachImages(token: string, offers: any[]) { return Promise.all(o
     }
     catch {
         o.signed_image_url = '';
-    } return o; })); }
+    } return {...o,message:removeAffiliateDisclosure(o.message||''),affiliate_disclosure:false}; })); }
 async function handle(request: Request) {
     const path = new URL(request.url).pathname.replace(/^\/api\//, '');
     try {
@@ -91,7 +91,7 @@ async function handle(request: Request) {
             return json({ offers, limited: offers.length === 1000 });
         }
         if (path === 'offers' && request.method === 'POST') {
-            const input = offerSchema.parse(await readJSON(request));
+            const input = offerSchema.parse(await readJSON(request)); input.message=removeAffiliateDisclosure(input.message); input.affiliate_disclosure=false;
             if (input.image_path && !input.image_path.startsWith(user.id + '/'))
                 throw new ApiError('Imagem não autorizada.', 403);
             const r = await sb('/rest/v1/offers', token, { method: 'POST', headers: { 'Content-Type': 'application/json', Prefer: 'return=representation' }, body: JSON.stringify({ ...input, user_id: user.id }) });
@@ -99,7 +99,7 @@ async function handle(request: Request) {
         }
         if (path.startsWith('offers/') && path !== 'offers/delete' && request.method === 'PATCH') {
             const id = uuid.parse(path.split('/')[1]);
-            const input = offerSchema.parse(await readJSON(request));
+            const input = offerSchema.parse(await readJSON(request)); input.message=removeAffiliateDisclosure(input.message); input.affiliate_disclosure=false;
             if (input.image_path && !input.image_path.startsWith(user.id + '/'))
                 throw new ApiError('Imagem não autorizada.', 403);
             const old = await sb('/rest/v1/offers?id=eq.' + id + '&select=image_path', token);

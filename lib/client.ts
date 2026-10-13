@@ -1,4 +1,4 @@
-import type { Offer } from './shared/offer';
+import { removeAffiliateDisclosure, type Offer } from './shared/offer';
 export type Config = {
     database: boolean;
     ai: boolean;
@@ -28,13 +28,13 @@ export async function api<T = any>(path: string, options: RequestInit = {}, retr
     throw Error(data.error || 'Não foi possível concluir a operação.'); return data as T; }
 export function body(data: unknown): RequestInit { return { method: 'POST', body: JSON.stringify(data) }; }
 export async function copyText(text: string) { if (!text.trim())
-    throw Error('Gere a mensagem primeiro.'); if (navigator.clipboard && window.isSecureContext) {
+    throw Error('Gere a mensagem primeiro.'); text=removeAffiliateDisclosure(text); if (navigator.clipboard && window.isSecureContext) {
     await navigator.clipboard.writeText(text);
     return;
 } const element = document.createElement('textarea'); element.value = text; element.style.position = 'fixed'; element.style.opacity = '0'; window.document.body.appendChild(element); element.select(); const ok = document.execCommand('copy'); element.remove(); if (!ok)
     throw Error('Seu navegador não permitiu copiar. Selecione o texto da prévia.'); }
 export function openWhatsApp(message: string) { if (!message.trim())
-    throw Error('Gere a mensagem primeiro.'); window.open('https://wa.me/?text=' + encodeURIComponent(message), '_blank', 'noopener,noreferrer'); }
+    throw Error('Gere a mensagem primeiro.'); message=removeAffiliateDisclosure(message); window.open('https://wa.me/?text=' + encodeURIComponent(message), '_blank', 'noopener,noreferrer'); }
 export async function downloadBlob(blob: Blob, name: string) { const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = name; link.click(); setTimeout(() => URL.revokeObjectURL(url), 2000); }
 export async function offerImage(o: Offer) { if (o.image_path && o.signed_image_url) {
     const r = await fetch(o.signed_image_url);
@@ -47,8 +47,8 @@ export async function offerImage(o: Offer) { if (o.image_path && o.signed_image_
         throw Error('Não foi possível baixar a foto. Envie uma imagem da galeria.');
     return response.blob();
 } throw Error('Esta oferta não tem imagem.'); }
-export async function shareImage(blob: Blob, message: string) { const file = new File([blob], 'oferta-tech.' + (blob.type === 'image/png' ? 'png' : blob.type === 'image/webp' ? 'webp' : 'jpg'), { type: blob.type }); const data = { files: [file], text: message }; if (navigator.canShare?.(data)) {
+export async function shareImage(blob: Blob, message: string) { const file = new File([blob], 'oferta-tech.' + (blob.type === 'image/png' ? 'png' : blob.type === 'image/webp' ? 'webp' : 'jpg'), { type: blob.type }); const data = { files: [file], text: removeAffiliateDisclosure(message) }; if (typeof navigator.share==='function' && navigator.canShare?.({files:[file]})) {
     await navigator.share(data);
-    return 'Confira se a legenda foi incluída antes de enviar.';
+    return 'Foto entregue ao compartilhamento. Escolha WhatsApp, seu grupo e confira a legenda antes de enviar.';
 } await downloadBlob(blob, file.name); await copyText(message); return 'Imagem baixada e texto copiado. Anexe a foto no grupo e cole a mensagem.'; }
 
