@@ -136,3 +136,7 @@ O painel antigo da loja redireciona para este aplicativo. Em Minha loja, conecte
 ## Leitura alternativa com Jina Reader
 
 Nova oferta oferece Automático, Somente leitura direta e Jina Reader. Automático tenta metadados públicos e usa o Jina em caso de dados incompletos. O backend chama r.jina.ai sem chave, com limite de tempo e resposta; o serviço recebe o link público. O link de afiliado permanece inalterado no cadastro. Páginas de login são recusadas; recomendações não são usadas para preencher preço do produto principal. Valores e imagens precisam ser revisados. O serviço gratuito tem limites e não garante leitura de todas as lojas.
+
+Para usar uma chave própria do Jina, configure JINA_API_KEY como segredo no ambiente do servidor e republique. A chave não é retornada pelo aplicativo nem deve ser prefixada com NEXT_PUBLIC_. Sem chave, permanece a leitura básica limitada por IP.
+
+No celular, Ajustes permite colar sua própria chave Jina em campo de senha e usar apenas nesta sessão. Ela é mantida em memória, enviada via POST ao backend e encaminhada exclusivamente ao Jina; não é persistida nem retornada na extração. O uso consome tokens da conta Jina. A variável JINA_API_KEY é uma alternativa permanente no servidor.

@@ -101,12 +101,12 @@ async function handle(request: Request) {
             }
             else if (!await getChatGPTUser())
                 throw new ApiError('Entre pelo ChatGPT para preparar rascunhos, ou configure o Supabase.', 401);
-            const input = z.object({ url: z.string().url().max(4096), provider:z.enum(['auto','direct','jina']).default('auto') }).parse(await readJSON(request));
+            const input = z.object({ url: z.string().url().max(4096), provider:z.enum(['auto','direct','jina']).default('auto'),jina_key:z.string().trim().min(20).max(1000).regex(/^[A-Za-z0-9_.-]+$/).optional() }).parse(await readJSON(request));
             if(!allowedURL(input.url))throw new ApiError('Esta loja não está na lista de leitura segura.',422);
             try {
-                if(input.provider==='jina')return json(await extractWithJina(input.url));
+                if(input.provider==='jina')return json(await extractWithJina(input.url,fetch,input.jina_key));
                 let direct;try{direct=await extractProduct(input.url);if(input.provider==='direct'||(!direct.partial&&direct.price!==null))return json({...direct,provider:'direct'});}catch(e){if(input.provider==='direct')throw e;}
-                try{return json(await extractWithJina(input.url));}catch(e){if(direct&&(direct.name||direct.image_url))return json({...direct,provider:'direct',partial:true,warning:direct.warning+' Leitura alternativa indisponível: '+(e as Error).message});throw e;}
+                try{return json(await extractWithJina(input.url,fetch,input.jina_key));}catch(e){if(direct&&(direct.name||direct.image_url))return json({...direct,provider:'direct',partial:true,warning:direct.warning+' Leitura alternativa indisponível: '+(e as Error).message});throw e;}
             }
             catch (e) {
                 throw new ApiError(extractionFailure + ' ' + (e instanceof Error ? e.message : ''), 422);

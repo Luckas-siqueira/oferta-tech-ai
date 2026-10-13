@@ -11,7 +11,8 @@ export type Draft = OfferInput & {
     id?: string;
     signed_image_url?: string;
 };
-export function Editor({ initial, config, onSaved, notify, onChange }: {
+export function Editor({ initial, config, onSaved, notify, onChange, jinaKey }: {
+    jinaKey?: string;
     initial: Draft;
     config: Config | null;
     onSaved: (offer: Offer, keepForm?: boolean) => void;
@@ -54,7 +55,7 @@ export function Editor({ initial, config, onSaved, notify, onChange }: {
         throw e;
     } };
     async function extract() { if (!draft.affiliate_url.trim())
-        throw Error('Cole o link do produto primeiro.'); const original = draft.affiliate_url; const data = await api('extract', body({ url: original,provider:reader })); if (current.current.affiliate_url !== original)
+        throw Error('Cole o link do produto primeiro.'); const original = draft.affiliate_url; const data = await api('extract', body({ url: original,provider:reader,...(jinaKey?{jina_key:jinaKey}:{}) })); if (current.current.affiliate_url !== original)
         return; setDraft(o => ({ ...o, name: o.name || data.name, description: o.description || data.description, image_url: file || o.image_url || o.image_path ? o.image_url : data.image_url, price: o.price ?? data.price, previous_price:o.previous_price ?? data.previous_price, brand: o.brand || data.brand, store: data.store, specs: o.specs.length ? o.specs : data.specs, category: categories.includes(data.category) ? data.category : o.category })); setWarning(data.warning); notify(data.partial ? 'Extração parcial. Complete os dados e confira o produto.' : 'Dados encontrados. Revise antes de divulgar.'); }
     async function ai(regenerate = false) { if (!config?.ai)
         throw Error('A integração de IA ainda precisa ser configurada. Veja Configurações.'); if (!config?.user)

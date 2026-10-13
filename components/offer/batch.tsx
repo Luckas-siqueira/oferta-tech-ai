@@ -12,8 +12,9 @@ type Row = {
     error?: string;
 };
 const labels = { waiting: 'Na fila', processing: 'Processando…', review: 'Aguardando revisão', image: 'Imagem necessária', failed: 'Falha na extração', duplicate: 'Duplicado', invalid: 'Link inválido' };
-export function Batch({ offers, config, onReview, notify }: {
+export function Batch({ offers, config, onReview, notify, jinaKey }: {
     offers: Offer[];
+    jinaKey?: string;
     config: Config | null;
     onReview: (d: Draft) => void;
     notify: (s: string) => void;
@@ -22,7 +23,7 @@ export function Batch({ offers, config, onReview, notify }: {
     const stop = useRef(false);
     const patch = (index: number, update: Partial<Row>) => setRows(old => old.map((r, i) => i === index ? { ...r, ...update } : r));
     async function processRow(row: Row, index: number) { patch(index, { status: 'processing', error: '' }); try {
-        const data = await api('extract', body({ url: row.url }));
+        const data = await api('extract', body({ url: row.url,...(jinaKey?{jina_key:jinaKey}:{}) }));
         let draft: Draft = { ...emptyOffer(), affiliate_url: row.url, name: data.name, description: data.description, image_url: data.image_url, price: data.price, brand: data.brand, store: data.store, specs: data.specs, category: categories.includes(data.category) ? data.category : 'Informática' };
         let aiWarning = '';
         if (config?.ai && config?.user && (draft.image_url || draft.name)) {
