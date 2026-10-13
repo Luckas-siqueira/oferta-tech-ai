@@ -3,7 +3,7 @@
 ## Executado nesta entrega
 
 - TypeScript: `tsc --noEmit` — aprovado.
-- Testes: `node scripts/run-tests.mjs` — 28 testes aprovados, 0 falhas.
+- Testes: `node scripts/run-tests.mjs` — 31 testes aprovados, 0 falhas.
 - Build para Sites/Vinext/Workers — aprovado.
 - Build Next.js para Node.js — aprovado (compilação, TypeScript e geração das rotas).
 - Integração Supabase e OpenAI: código implementado; **não ativada** sem as variáveis e serviços externos.
@@ -63,3 +63,7 @@ O envio de foto e legenda no WhatsApp real não foi testado em Android neste amb
 ## Limpeza após gerar mensagem
 
 Ao gerar com nome e link preenchidos, o editor guarda uma cópia independente dos dados e do arquivo de foto, limpa o cadastro e leva à prévia. A prévia permite editar, copiar, compartilhar e salvar o resultado sem recolocar os dados no formulário. Nenhuma exclusão do banco é executada. TypeScript, os 28 testes existentes e build foram verificados; o novo fluxo de toque no Android não foi testado em aparelho real.
+
+## Painel da loja unificado
+
+Integração com produtos.json da Mega Vitrine: leitura, publicação de foto e dados em um commit, edição com verificação de conflito e exclusão confirmada. Testes HTTP controlados verificam preservação do catálogo, duplicidade, alterações concorrentes e commit atômico; não representam uma publicação de produto real com um token do usuário. O painel antigo passa a abrir o aplicativo. Autorização do GitHub dentro do app e testes de toque em Android continuam necessários.

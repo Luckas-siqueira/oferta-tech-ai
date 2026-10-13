@@ -128,3 +128,7 @@ Para a hospedagem gerenciada da entrega, use os helpers Sites já configurados. 
 - https://supabase.com/docs/reference/javascript/auth-getuser
 - https://developers.openai.com/api/docs/guides/structured-outputs
 - https://developers.openai.com/api/reference/resources/responses/methods/create
+
+## Painel da Mega Vitrine
+
+O painel antigo da loja redireciona para este aplicativo. Em Minha loja, conecte um token GitHub de expiração curta, somente para Luckas-siqueira/Mega-Vitrine e Contents: Read and write. Ele fica apenas na memória da aba e é enviado diretamente à API GitHub. Carregue o catálogo para editar ou excluir um produto; Nova oferta e a prévia permitem publicar novos produtos. Foto e catálogo são enviados em um commit atômico, sem force push. Mudanças concorrentes são rejeitadas. A publicação no GitHub Pages pode levar alguns minutos. Exclusões do catálogo não apagam imagens antigas nem ofertas no Supabase.

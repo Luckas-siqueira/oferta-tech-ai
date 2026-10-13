@@ -4,6 +4,7 @@ import { Trash2, Eye, Pencil, Copy, Send, Search, Image as ImageIcon, Check } fr
 import { categories, currency, statusLabel, imageSource, type Offer } from '@/lib/shared/offer';
 import { copyText, openWhatsApp, offerImage, shareImage } from '@/lib/client';
 import { Button, Modal, Empty, ProductImage } from './ui';
+import {PublishStore} from './store';
 import {ShareOffer} from './share';
 export function History({ offers, onEdit, onDelete, onMarkShared, notify }: {
     offers: Offer[];
@@ -41,6 +42,6 @@ export function History({ offers, onEdit, onDelete, onMarkShared, notify }: {
     }
     finally {
         setBusy(false);
-    } }}><Trash2 size={16}/>{busy ? 'Excluindo…' : 'Excluir definitivamente'}</Button></div></Modal>}{view && <Modal title={view.name} onClose={() => setView(null)}><ProductImage src={imageSource(view)} name={view.name} className="view-image"/><p>{view.description}</p><p className="price">{view.price !== null ? currency(view.price) : 'Preço não informado'}</p><div className="message-preview">{view.message}</div><div className="action-row"><Button variant="secondary" onClick={() => { setView(null); onEdit(view); }}><Pencil size={16}/>Editar</Button><ShareOffer image={view} message={view.message} notify={notify}/></div>{view.status !== 'shared' && <Button variant="ghost full" onClick={() => run(async () => { await onMarkShared(view); setView({ ...view, status: 'shared' }); })}><Check size={16}/>Já enviei: marcar compartilhada</Button>}</Modal>}</section>;
+    } }}><Trash2 size={16}/>{busy ? 'Excluindo…' : 'Excluir definitivamente'}</Button></div></Modal>}{view && <Modal title={view.name} onClose={() => setView(null)}><ProductImage src={imageSource(view)} name={view.name} className="view-image"/><p>{view.description}</p><p className="price">{view.price !== null ? currency(view.price) : 'Preço não informado'}</p><div className="message-preview">{view.message}</div><div className="action-row"><Button variant="secondary" onClick={() => { setView(null); onEdit(view); }}><Pencil size={16}/>Editar</Button><PublishStore offer={view} notify={notify}/><ShareOffer image={view} message={view.message} notify={notify}/></div>{view.status !== 'shared' && <Button variant="ghost full" onClick={() => run(async () => { await onMarkShared(view); setView({ ...view, status: 'shared' }); })}><Check size={16}/>Já enviei: marcar compartilhada</Button>}</Modal>}</section>;
 }
 
