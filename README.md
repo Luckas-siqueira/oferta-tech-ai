@@ -144,3 +144,7 @@ No celular, Ajustes permite colar sua própria chave Jina em campo de senha e us
 ## Extrator próprio pelo GitHub Actions
 
 Minha loja deve estar conectada com token limitado a Mega-Vitrine e permissões Contents: Read and write e Actions: Read and write. Em Nova oferta ou Vários links, escolha GitHub Actions. O workflow extrair-produto.yml usa Playwright para ler páginas públicas e publica resultados JSON em .extractions/, preservando o link original. Os resultados ficam públicos no repositório público. A tarefa pode levar alguns minutos. O extrator não faz login, não usa Apify/Jina e não garante leitura de páginas bloqueadas. Nenhum produto é publicado na loja automaticamente.
+
+## Otimização automática de imagens
+
+As novas fotos são preparadas no celular antes do upload: até 1400 px no lado maior, mantendo proporção, transparência e orientação exibida pelo navegador. WebP com qualidade 82%; o arquivo original é usado quando a conversão não reduz o tamanho. A otimização também ocorre antes de publicar na loja e preparar o compartilhamento com foto. Fotos já pequenas em JPEG/WebP são preservadas. A seleção continua limitada a 5 MB e 40 megapixels.
