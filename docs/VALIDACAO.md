@@ -77,3 +77,7 @@ Cadastro e login com senha foram testados diretamente na API Supabase com uma co
 ## Jina Reader
 
 Integração server-side sem chave paga, com seleção no editor e fallback automático. 40 testes passaram, incluindo seleção da foto e preço do produto em destaque, descarte de recomendações, páginas de login, URLs proibidas e limite HTTP 429. TypeScript passou. Teste da rota publicada é executado após a implantação; não há teste de toque no Android neste ambiente.
+
+## GitHub Actions
+
+Workflow e extrator próprio em Mega-Vitrine/tools/extractor, com Playwright 1.64.0 fixado no lockfile. Três testes validam endereços de rede, metadados, moeda e páginas de login. Os 41 testes do aplicativo e TypeScript passaram. A primeira execução real concluiu a tarefa, mas meli.la retornou uma página de erro em espanhol e não disponibilizou os dados do produto. Foi adicionado endereço direto opcional sem substituir o link de afiliado. Não afirmar sucesso de extração quando ok=false.

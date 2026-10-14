@@ -1,7 +1,7 @@
 import { safeURL } from '../shared/offer';
 export const extractionFailure = 'Não foi possível extrair todas as informações. Adicione uma imagem do produto para continuar.';
 const shops = ['amazon.com.br', 'amazon.com', 'amzn.to', 'mercadolivre.com.br', 'mercadolivre.com', 'meli.la', 'shopee.com.br', 'shope.ee', 'magazineluiza.com.br', 'magalu.com', 'kabum.com.br', 'pichau.com.br', 'terabyteshop.com.br', 'aliexpress.com', 'aliexpress.us'];
-const cdns = ['luckas-siqueira.github.io', 'media-amazon.com', 'ssl-images-amazon.com', 'mlstatic.com', 'shopeemobile.com', 'shopee.com.br', 'alicdn.com', 'magazineluiza.com.br', 'magalu.com', 'kabum.com.br', 'pichau.com.br', 'terabyteshop.com.br'];
+const cdns = ['img.susercontent.com', 'luckas-siqueira.github.io', 'media-amazon.com', 'ssl-images-amazon.com', 'mlstatic.com', 'shopeemobile.com', 'shopee.com.br', 'alicdn.com', 'magazineluiza.com.br', 'magalu.com', 'kabum.com.br', 'pichau.com.br', 'terabyteshop.com.br'];
 export function allowedURL(raw: string, image = false) { if (!safeURL(raw))
     return false; const u = new URL(raw); return u.protocol === 'https:' && (!u.port || u.port === '443') && [...shops, ...(image ? cdns : [])].some(domain => u.hostname === domain || u.hostname.endsWith('.' + domain)); }
 export async function boundedBody(response: Response, max: number) { const reader = response.body?.getReader(); if (!reader)
