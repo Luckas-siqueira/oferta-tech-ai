@@ -140,3 +140,7 @@ Nova oferta oferece Automático, Somente leitura direta e Jina Reader. Automáti
 Para usar uma chave própria do Jina, configure JINA_API_KEY como segredo no ambiente do servidor e republique. A chave não é retornada pelo aplicativo nem deve ser prefixada com NEXT_PUBLIC_. Sem chave, permanece a leitura básica limitada por IP.
 
 No celular, Ajustes permite colar sua própria chave Jina em campo de senha e usar apenas nesta sessão. Ela é mantida em memória, enviada via POST ao backend e encaminhada exclusivamente ao Jina; não é persistida nem retornada na extração. O uso consome tokens da conta Jina. A variável JINA_API_KEY é uma alternativa permanente no servidor.
+
+## Extrator próprio pelo GitHub Actions
+
+Minha loja deve estar conectada com token limitado a Mega-Vitrine e permissões Contents: Read and write e Actions: Read and write. Em Nova oferta ou Vários links, escolha GitHub Actions. O workflow extrair-produto.yml usa Playwright para ler páginas públicas e publica resultados JSON em .extractions/, preservando o link original. Os resultados ficam públicos no repositório público. A tarefa pode levar alguns minutos. O extrator não faz login, não usa Apify/Jina e não garante leitura de páginas bloqueadas. Nenhum produto é publicado na loja automaticamente.
